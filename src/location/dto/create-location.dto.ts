@@ -12,4 +12,8 @@ export class CreateLocationDto {
   @IsNumber()
   @IsNotEmpty()
   cost: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  ownerId: number;
 }
