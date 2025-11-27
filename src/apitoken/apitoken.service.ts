@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateApitokenDto } from './dto/create-apitoken.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Apitoken } from './entities/apitoken.entity';
@@ -72,8 +76,41 @@ export class ApitokenService {
   async validateApiKey(apiKey: string): Promise<boolean> {
     const apitoken = await this.findOneByToken(apiKey);
     if (!apitoken) {
+      throw new UnauthorizedException('Invalid API token');
+    }
+    if (!apitoken.active) {
+      throw new UnauthorizedException('API token is inactive');
+    }
+    if (apitoken.reqLeft <= 0) {
+      throw new UnauthorizedException('API token has no requests left');
+    }
+    return true;
+  }
+
+  async validateAndReduceApiKey(apiKey: string): Promise<void> {
+    const apitoken = await this.findOneByToken(apiKey);
+    if (!apitoken) {
+      throw new UnauthorizedException('Invalid API token');
+    }
+    if (!apitoken.active) {
+      throw new UnauthorizedException('API token is inactive');
+    }
+    if (apitoken.reqLeft <= 0) {
+      throw new UnauthorizedException('API token has no requests left');
+    }
+    apitoken.reqLeft--;
+    await this.apitokenRepository.save(apitoken);
+  }
+
+  async reduceReqLeftByToken(token: string): Promise<void> {
+    const apitoken = await this.findOneByToken(token);
+    if (!apitoken) {
       throw new BadRequestException('Token not found');
     }
-    return apitoken.active && apitoken.reqLeft > 0;
+    if (apitoken.reqLeft <= 0) {
+      throw new BadRequestException('Token has no requests left');
+    }
+    apitoken.reqLeft--;
+    await this.apitokenRepository.save(apitoken);
   }
 }

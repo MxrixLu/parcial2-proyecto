@@ -31,17 +31,7 @@ export class ApiKeyGuard implements CanActivate {
   }
 
   private async validateApiKey(apiKey: string): Promise<boolean> {
-    try {
-      const valid = await this.apitokenService.validateApiKey(apiKey);
-      if (!valid) {
-        throw new UnauthorizedException('Token not found');
-      }
-      return valid;
-    } catch (error) {
-      if (error instanceof Error && 'code' in error && error.code === '23505') {
-        throw new UnauthorizedException('Token not found');
-      }
-      throw error;
-    }
+    await this.apitokenService.validateAndReduceApiKey(apiKey);
+    return true;
   }
 }
