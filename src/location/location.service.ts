@@ -15,19 +15,7 @@ export class LocationService {
   ) {}
 
   async create(createLocationDto: CreateLocationDto) {
-    const owner = await this.characterRepository.findOne({
-      where: { id: createLocationDto.owner.id },
-    });
-    if (!owner) {
-      throw new BadRequestException('Owner not found');
-    }
-    if (owner.property) {
-      throw new BadRequestException('Owner already has a property');
-    }
-    const location = this.locationRepository.create({
-      ...createLocationDto,
-      favCharacters: [],
-    });
+    const location = this.locationRepository.create(createLocationDto);
     await this.locationRepository.save(location);
     return location;
   }

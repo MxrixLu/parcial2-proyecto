@@ -2,6 +2,7 @@ import { Character } from 'src/character/entities/character.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -10,7 +11,7 @@ import {
 @Entity()
 export class Location {
   @PrimaryGeneratedColumn()
-  id: number; // auto incrementad
+  id: number;
 
   @Column()
   name: string;
@@ -22,6 +23,7 @@ export class Location {
   cost: number;
 
   @OneToOne(() => Character, (character) => character.property)
+  @JoinColumn()
   owner: Character;
 
   @ManyToMany(() => Character, (character) => character.favPlaces)

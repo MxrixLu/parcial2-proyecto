@@ -1,5 +1,4 @@
 import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
-import { Character } from 'src/character/entities/character.entity';
 
 export class CreateLocationDto {
   @IsString()
@@ -13,6 +12,4 @@ export class CreateLocationDto {
   @IsNumber()
   @IsNotEmpty()
   cost: number;
-
-  owner: Character;
 }
