@@ -21,7 +21,7 @@ export class CharacterController {
     return this.characterService.create(createCharacterDto);
   }
 
-  @Patch(':id/favorite/:locationId')
+  @Patch(':id/favorites/:locationId')
   addFavorite(
     @Param('id') id: string,
     @Param('locationId') locationId: string,

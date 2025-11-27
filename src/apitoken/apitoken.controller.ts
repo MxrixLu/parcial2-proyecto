@@ -21,7 +21,7 @@ export class ApitokenController {
 
   @Get()
   findOne(@Query('token') token: string) {
-    return this.apitokenService.findOne(token);
+    return this.apitokenService.findOneByToken(token);
   }
 
   @Patch(':id/reduceReqLeft')

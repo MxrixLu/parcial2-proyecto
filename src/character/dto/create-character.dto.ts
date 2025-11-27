@@ -12,6 +12,4 @@ export class CreateCharacterDto {
   @IsBoolean()
   @IsNotEmpty()
   employee: boolean;
-
-  property: Location;
 }

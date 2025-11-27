@@ -15,11 +15,7 @@ export class CharacterService {
   ) {}
 
   async create(createCharacterDto: CreateCharacterDto) {
-    const character = this.characterRepository.create({
-      ...createCharacterDto,
-      property: undefined,
-      favPlaces: [],
-    });
+    const character = this.characterRepository.create(createCharacterDto);
     await this.characterRepository.save(character);
     return character;
   }
@@ -27,6 +23,7 @@ export class CharacterService {
   async addFavorite(characterId: number, locationId: number) {
     const character = await this.characterRepository.findOne({
       where: { id: characterId },
+      relations: ['favPlaces'],
     });
     if (!character) {
       throw new BadRequestException('Character not found');
@@ -37,18 +34,23 @@ export class CharacterService {
     if (!location) {
       throw new BadRequestException('Location not found');
     }
-    if (character.favPlaces.includes(location)) {
+    if (!character.favPlaces) {
+      character.favPlaces = [];
+    }
+    const alreadyFavorite = character.favPlaces.some(
+      (fav) => fav.id === location.id,
+    );
+    if (alreadyFavorite) {
       throw new BadRequestException('Location already in favorites');
     }
     character.favPlaces.push(location);
     await this.characterRepository.save(character);
     return character;
   }
-  //El personaje debe existir y si no tiene propiedad el servicio debe retornar {taxDebt:0} COEF = SI ES EMPLEADO 0.08 SI NO 0.03
-  //COSTO_LOCATION * (1 + COEF.)
   async getTaxes(characterId: number) {
     const character = await this.characterRepository.findOne({
       where: { id: characterId },
+      relations: ['property'],
     });
     if (!character) {
       throw new BadRequestException('Character not found');

@@ -29,10 +29,20 @@ export class ApitokenService {
     }
   }
 
-  //Se puede usar (activo && reqLeft>0) retorna boolean
   async findOne(id: string) {
     try {
       return await this.apitokenRepository.findOneBy({ id });
+    } catch (error) {
+      if (error instanceof Error && 'code' in error && error.code === '23505') {
+        throw new BadRequestException('Token not found');
+      }
+      throw error;
+    }
+  }
+
+  async findOneByToken(token: string) {
+    try {
+      return await this.apitokenRepository.findOneBy({ token });
     } catch (error) {
       if (error instanceof Error && 'code' in error && error.code === '23505') {
         throw new BadRequestException('Token not found');
@@ -60,7 +70,7 @@ export class ApitokenService {
   }
 
   async validateApiKey(apiKey: string): Promise<boolean> {
-    const apitoken = await this.findOne(apiKey);
+    const apitoken = await this.findOneByToken(apiKey);
     if (!apitoken) {
       throw new BadRequestException('Token not found');
     }

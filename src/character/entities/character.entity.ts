@@ -1,7 +1,8 @@
 import {
   Column,
   Entity,
-  ManyToOne,
+  JoinTable,
+  ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -10,7 +11,7 @@ import { Location } from 'src/location/entities/location.entity';
 @Entity()
 export class Character {
   @PrimaryGeneratedColumn()
-  id: number; // auto incrementado
+  id: number;
 
   @Column()
   name: string;
@@ -24,6 +25,7 @@ export class Character {
   @OneToOne(() => Location, (location) => location.owner)
   property: Location;
 
-  @ManyToOne(() => Location, (location) => location.favCharacters)
+  @ManyToMany(() => Location, (location) => location.favCharacters)
+  @JoinTable()
   favPlaces: Location[];
 }
